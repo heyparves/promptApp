@@ -1,28 +1,10 @@
 "use client";
-
-import { useState, useEffect } from "react";
-
-import PromptCard from "./PromptCard";
-
-const PromptCardList = ({ data, handleTagClick }) => {
-  return (
-    <div className="mt-16 prompt_layout">
-      {data.map((post) => (
-        <PromptCard
-          key={post._id}
-          post={post}
-          handleTagClick={handleTagClick}
-        />
-      ))}
-    </div>
-  );
-};
+import React, { useState, useEffect } from "react";
+import PromptCard from "./PromptCard"; // Import your PromptCard component here
 
 const Feed = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [posts, setPosts] = useState([]);
-
-  // Search states
   const [searchText, setSearchText] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [searchedResults, setSearchedResults] = useState([]);
@@ -32,23 +14,18 @@ const Feed = () => {
     const data = await response.json();
 
     setAllPosts(data);
+    setPosts(data);
   };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch("api/prompt");
-      const data = await response.json();
-      console.log(data);
-      setPosts(data);
-    };
     fetchPosts();
   }, []);
 
-  const filterPrompts = (searchtext) => {
-    const regex = new RegExp(searchtext, "i"); // 'i' flag for case-insensitive search
+  const filterPrompts = (searchText) => {
+    const regex = new RegExp(searchText, "i"); // 'i' flag for case-insensitive search
     return allPosts.filter(
       (item) =>
-        regex.test(item.creator.username) ||
+        regex.test(item.creator?.username) ||
         regex.test(item.tag) ||
         regex.test(item.prompt)
     );
@@ -56,12 +33,12 @@ const Feed = () => {
 
   const handleSearchChange = (e) => {
     clearTimeout(searchTimeout);
-    setSearchText(e.target.value);
+    const newSearchText = e.target.value;
+    setSearchText(newSearchText);
 
-    // debounce method
     setSearchTimeout(
       setTimeout(() => {
-        const searchResult = filterPrompts(e.target.value);
+        const searchResult = filterPrompts(newSearchText);
         setSearchedResults(searchResult);
       }, 500)
     );
@@ -74,10 +51,6 @@ const Feed = () => {
     setSearchedResults(searchResult);
   };
 
-  // transform from array to object
-  const promptCards = posts.map((post) => (
-    <PromptCard post={post} handleTagClick={() => {}} />
-  ));
   return (
     <section className="feed">
       <form className="relative w-full flex-center">
@@ -92,14 +65,23 @@ const Feed = () => {
       </form>
 
       {/* All Prompts */}
-      {searchText ? (
-        <PromptCardList
-          data={searchedResults}
-          handleTagClick={handleTagClick}
-        />
-      ) : (
-        <PromptCardList data={posts} handleTagClick={handleTagClick} />
-      )}
+      <div className="mt-16 prompt_layout">
+        {searchedResults.length > 0
+          ? searchedResults.map((post) => (
+              <PromptCard
+                key={post._id}
+                post={post}
+                handleTagClick={handleTagClick}
+              />
+            ))
+          : posts.map((post) => (
+              <PromptCard
+                key={post._id}
+                post={post}
+                handleTagClick={handleTagClick}
+              />
+            ))}
+      </div>
     </section>
   );
 };
