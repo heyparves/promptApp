@@ -179,6 +179,7 @@
   z-index:999;
   border-bottom-width:1px;
   border-bottom-color:rgba(255,255,255,0.33);
+  overflow: hidden; 
  }
 
  @media only screen and (max-width: 428px) {
