@@ -50,7 +50,7 @@ const CreatePrompt = () => {
         />
       ) : (
         <div className="w-full max-w-full bg-red-100 px-10 py-4 border-2 border-red-500">
-          Please log in to create a prompt.
+          To create or edit a prompt, you need to sign in.
         </div>
       )}
     </div>
